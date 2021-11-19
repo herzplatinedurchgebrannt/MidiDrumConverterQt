@@ -2,4 +2,4 @@
 Simple midi drum converter build w. Qt5/C++
 
 
-![Screenshot](MDC_1.png)
+![Screenshot](pics/MDC_1.png)
