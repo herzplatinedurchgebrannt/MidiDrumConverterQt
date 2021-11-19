@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Midi Drum Converter</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>5</y>
+      <width>551</width>
+      <height>341</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <property name="bottomMargin">
+      <number>10</number>
+     </property>
+     <property name="horizontalSpacing">
+      <number>6</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Choose preset:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="text">
+        <string>_convert.mid</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QListView" name="listView">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="comboBox"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>File name extension:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMidi">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionClear_files"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionHelp"/>
+   </widget>
+   <widget class="QMenu" name="menuConvert">
+    <property name="title">
+     <string>Convert</string>
+    </property>
+    <addaction name="actionConvert"/>
+    <addaction name="actionLoad_presets_xml"/>
+   </widget>
+   <addaction name="menuMidi"/>
+   <addaction name="menuConvert"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionLoad_presets_xml"/>
+   <addaction name="actionConvert"/>
+   <addaction name="actionClear_files"/>
+   <addaction name="actionHelp"/>
+   <addaction name="actionClose"/>
+  </widget>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/folder.png</normaloff>:/imgs/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open File</string>
+   </property>
+   <property name="toolTip">
+    <string>Open midi drum files</string>
+   </property>
+  </action>
+  <action name="actionConvert">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/process.png</normaloff>:/imgs/process.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert Files</string>
+   </property>
+   <property name="toolTip">
+    <string>Convert your files</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/conversation.png</normaloff>:/imgs/conversation.png</iconset>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Do you need help?</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/skull.png</normaloff>:/imgs/skull.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close program</string>
+   </property>
+  </action>
+  <action name="actionClear_files">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/dust.png</normaloff>:/imgs/dust.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear files</string>
+   </property>
+  </action>
+  <action name="actionLoad_presets_xml">
+   <property name="icon">
+    <iconset resource="../Coding/Icons/Icons.qrc">
+     <normaloff>:/imgs/schlussel.png</normaloff>:/imgs/schlussel.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load presets.xml</string>
+   </property>
+   <property name="toolTip">
+    <string>Load presets.xml file</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../Coding/Icons/Icons.qrc"/>
+  <include location="../Coding/Icons/Icons.qrc"/>
+  <include location="../Coding/Icons/Icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
