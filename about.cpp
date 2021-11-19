@@ -16,6 +16,6 @@ About::~About()
 
 void About::on_pushButton_clicked()
 {
-    QDesktopServices::openUrl(QUrl("http://www.github.com/"));
+    QDesktopServices::openUrl(QUrl("https://github.com/herzplatinedurchgebrannt/MidiDrumConverterQt/blob/master/README.md"));
 }
 
