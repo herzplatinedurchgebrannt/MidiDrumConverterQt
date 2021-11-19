@@ -76,7 +76,6 @@ void MainWindow::on_actionConvert_triggered()
         }
     }
 
-
     // check if files are selected
     if (currentFiles.count() == 0)
     {
@@ -88,7 +87,13 @@ void MainWindow::on_actionConvert_triggered()
 
 
     // check if preset file was loaded
-    // PRESET FILE ---------------------->
+    if (midiConvVectorPreset.size() == 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please load presets.xml file.");
+        msgBox.exec();
+        return;
+    }
 
 
     // EXCEPTION HANDLING ------------------>
@@ -203,9 +208,9 @@ void MainWindow::on_actionConvert_triggered()
             {
                 if (v.size() > 0)
                 {
-                    cout << "Missing notes! :-(" << endl;
-                    cout << "add those notes to matrix: " << endl;
-                    std::sort(std::begin(v), std::end(v));
+                    //cout << "Missing notes! :-(" << endl;
+                    //cout << "add those notes to matrix: " << endl;
+                    //std::sort(std::begin(v), std::end(v));
                     //for (int n : v){
                         //cout << "{" << n << "," << n << ",Instrument," << midiConvArray[0].pluginBefore << "," << midiConvArray[0].pluginAfter << "},"<< endl;
                     //}
@@ -281,52 +286,61 @@ void MainWindow::on_actionLoad_presets_xml_triggered()
     if (openPresetFile.size() > 0)
     {
         ui->comboBox->clear();
-    }
 
-    // Read the sample.xml file
-    XMLDocument doc;
-    //doc.LoadFile( "/Users/alexandermathieu/Coding/TestArea/xml/presets.xml" );
-
-    string presetFile = openPresetFile.toStdString();
-    const char *cstr = presetFile.c_str();
-
-    doc.LoadFile(cstr);
-
-    // EXCEPTION HANDLING --------------------->
-    // parse xml file
-    XMLElement* root = doc.FirstChildElement("Presets");
-
-    for(XMLElement* e = root->FirstChildElement("Preset"); e != NULL; e = e->NextSiblingElement("Preset"))
-    {
-        string presetNameXml = e->Attribute("name");
-        QString qPresetNameXml = QString::fromStdString(presetNameXml);
-        std::cout << "PRESET:   " + presetNameXml + "\n" << std::endl;
-
-        for(XMLElement* f = e->FirstChildElement("Convert"); f != NULL; f = f->NextSiblingElement("Convert"))
+        try
         {
-            string noteBeforeXml = f->FirstChildElement("NoteBefore")->GetText();
-            string noteAfterXml = f->FirstChildElement("NoteAfter")->GetText();
-            string instrumentXml = f->FirstChildElement("Instrument")->GetText();
+            // Read the sample.xml file
+            XMLDocument doc;
+            //doc.LoadFile( "/Users/alexandermathieu/Coding/TestArea/xml/presets.xml" );
 
-            std::cout << "NoteBefore:   " + noteBeforeXml << std::endl;
-            std::cout << "NoteAfter:    " + noteAfterXml << std::endl;
-            std::cout << "Instrument    " + instrumentXml << std::endl;
+            string presetFile = openPresetFile.toStdString();
+            const char *cstr = presetFile.c_str();
 
-            // add current values to vector
-            struct midiConv currentMidiConv {std::stoi(noteBeforeXml),std::stoi(noteAfterXml),instrumentXml,presetNameXml,""};
-            midiConvVector.push_back(currentMidiConv);
+            doc.LoadFile(cstr);
+
+
+            // parse xml file
+            XMLElement* root = doc.FirstChildElement("Presets");
+
+            for(XMLElement* e = root->FirstChildElement("Preset"); e != NULL; e = e->NextSiblingElement("Preset"))
+            {
+                string presetNameXml = e->Attribute("name");
+                QString qPresetNameXml = QString::fromStdString(presetNameXml);
+                std::cout << "PRESET:   " + presetNameXml + "\n" << std::endl;
+
+                for(XMLElement* f = e->FirstChildElement("Convert"); f != NULL; f = f->NextSiblingElement("Convert"))
+                {
+                    string noteBeforeXml = f->FirstChildElement("NoteBefore")->GetText();
+                    string noteAfterXml = f->FirstChildElement("NoteAfter")->GetText();
+                    string instrumentXml = f->FirstChildElement("Instrument")->GetText();
+
+                    std::cout << "NoteBefore:   " + noteBeforeXml << std::endl;
+                    std::cout << "NoteAfter:    " + noteAfterXml << std::endl;
+                    std::cout << "Instrument    " + instrumentXml << std::endl;
+
+                    // add current values to vector
+                    struct midiConv currentMidiConv {std::stoi(noteBeforeXml),std::stoi(noteAfterXml),instrumentXml,presetNameXml,""};
+                    midiConvVector.push_back(currentMidiConv);
+                }
+                std::cout << "-------------" << std::endl;
+
+                // write values to vector
+                struct midiConvPreset currentMidiConvPreset {midiConvVector,presetNameXml};
+                midiConvVectorPreset.push_back(currentMidiConvPreset);
+
+                ui->comboBox->addItem(qPresetNameXml);
+
+                midiConvVector.clear();
+            }
+            throw 1;
         }
-        std::cout << "-------------" << std::endl;
+        catch(...)
+        {
+            std::cout << "Crash while parsing xml file" << std::endl;
+        }
 
-        // write values to vector
-        struct midiConvPreset currentMidiConvPreset {midiConvVector,presetNameXml};
-        midiConvVectorPreset.push_back(currentMidiConvPreset);
 
-        ui->comboBox->addItem(qPresetNameXml);
-
-        midiConvVector.clear();
+        currentPreset = 0;
     }
-
-    currentPreset = 0;
 }
 
