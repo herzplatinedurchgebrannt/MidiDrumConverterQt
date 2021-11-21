@@ -3,7 +3,7 @@ Simple midi drum converter build w. Qt5/C++
 
 ![Screenshot](pics/MDC_1.png)
 
-Description:
+## Description:
 
 When using different drum vst plugins, you have the problem that these plugins are not using the same notes.
 For example: The note for Kick is mostly on 36. Otherwise Kontakt/GetGoodDrums plays Kick on 24.
@@ -16,7 +16,7 @@ You have to config a presets.xml file once, and then you can convert the midi li
 Maybe there is also an alternative way in DAWs, but I liked the idea to convert the files.
 The converter is not limited to drum files. You could transpose piano files, or whatever you would like to. 
 
-The presets.xml file:
+## The presets.xml file:
 
 The MDC uses an standard xml-file to convert the notes.
 Here you can add notes or whole presets, if you want to.
