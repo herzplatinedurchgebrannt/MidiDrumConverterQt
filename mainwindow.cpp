@@ -10,10 +10,20 @@
 #include "Options.h"
 #include <QMessageBox>
 #include "tinyxml2.h"
+#include <stdexcept>
 
 using namespace std;
 using namespace tinyxml2;
 using namespace smf;
+
+class XmlFileBroken : public exception {
+public:
+    const char* name;
+
+    virtual const char* what() const noexcept {
+        return "XmlFileBroken";
+    }
+};
 
 QStringListModel *model = new QStringListModel();
 
@@ -95,141 +105,111 @@ void MainWindow::on_actionConvert_triggered()
         return;
     }
 
-
-    // EXCEPTION HANDLING ------------------>
-    foreach(QString str, currentFiles)
-    {
-        std::cout << str.toStdString() << std::endl;
-
-        bool logConvert = true;
-        std::list<int> missedNotes;
-        std::vector<int> v;
-
-        /*
-        struct midiConv
+    try {
+        foreach(QString str, currentFiles)
         {
-            int noteBefore;
-            int noteAfter;
-            string instrument;
-            string pluginBefore;
-            string pluginAfter;
-        };
+            std::cout << str.toStdString() << std::endl;
 
-        midiConv midiConvArray[20] =
-        {
-            {36,24,"KICK","SSD5","GGD4"},
-            {38,26,"SNARE","SSD5","GGD4"},
-            {46,26,"TOM_LO","SSD5","GGD4"},
-            {57,56,"TOM_HI","SSD5","GGD4"},
-            {55,54,"HIHAT","SSD5","GGD4"},
-            {42,23,"CRASH_LE","SSD5","GGD4"},
-            {48,41,"CRASH_RI","SSD5","GGD4"},
-            {50,28,"RIDE","SSD5","GGD4"},
-            {43,41,"RIDE","SSD5","GGD4"},
-            {24,24,"KICK","SSD5","GGD4"},
-            {26,26,"SNARE","SSD5","GGD4"},
-            {60,43,"HH_CL_2","SSD5","GGD4"},
-            {66,42,"HH_CL_1","SSD5","GGD4"},
-            {51,61,"RIDE","SSD5","GGD4"},
-            {54,42,"HH_CL_1","SSD5","GGD4"},
-            {56,61,"RIDE","SSD5","GGD4"},
-            {40,47,"RIDE","SSD5","GGD4"},
-            {65,56,"RIDE","SSD5","GGD4"},
-            {59,54,"RIDE","SSD5","GGD4"},
-            {47,47,"RIDE","SSD5","GGD4"}
-        };*/
+            bool logConvert = true;
+            std::list<int> missedNotes;
+            std::vector<int> v;
 
+            int midiConvArraySize = midiConvVectorPreset[currentPreset].blub.size();
 
-        //int midiConvArraySize = sizeof(midiConvArray)/sizeof(midiConvArray[0]);
-        int midiConvArraySize = midiConvVectorPreset[currentPreset].blub.size();
+            Options options;
+            MidiFile midifile;
 
-        Options options;
-        MidiFile midifile;
+            midifile.read(str.toStdString());
 
-        midifile.read(str.toStdString());
+            bool foundMatch = false;
 
-        bool foundMatch = false;
-
-        for (int i=0; i<midifile.getTrackCount(); i++) {
-            for (int j=0; j<midifile[i].getEventCount(); j++)
-            {
-                if (!midifile[i][j].isNote()) continue;
-                if (midifile[i][j].getChannel() == 9) continue;
-
-                // loop matrix to find notes
-                for (int c = 0; c < midiConvArraySize; c++)
+            for (int i=0; i<midifile.getTrackCount(); i++) {
+                for (int j=0; j<midifile[i].getEventCount(); j++)
                 {
-                    foundMatch = false;
+                    if (!midifile[i][j].isNote()) continue;
+                    if (midifile[i][j].getChannel() == 9) continue;
 
-                    if (logConvert == false)
+                    // loop matrix to find notes
+                    for (int c = 0; c < midiConvArraySize; c++)
                     {
-                        cout << midifile[i][j].getP1() << endl;
-                        //cout << midiConvArray[c].noteBefore << endl;
-                        cout << midiConvVectorPreset[currentPreset].blub[c].noteBefore << endl;
-                    }
+                        foundMatch = false;
 
-                    if (midifile[i][j].getP1() == midiConvVectorPreset[currentPreset].blub[c].noteBefore /*| midiConvArray[c].noteBefore == midiConvArray[c].noteAfter*/)
-                    {
-                        foundMatch = true;
-                        midifile[i][j].setP1(midiConvVectorPreset[currentPreset].blub[c].noteAfter);
                         if (logConvert == false)
-                            cout << "match" << endl;
-                        break;
-                    }
-                }
-                // note not found in matrix -> add notes to matrix
-                if (foundMatch == false){
-
-                    // write first value to vector
-                    if (v.empty())
-                    {
-                        v.push_back(midifile[i][j].getP1());
-                    }
-                    // check if vector contains value
-                    else
-                    {
-                        bool addMissedNote = true;
-                        for (int k = 0; k < (int)v.size(); k++)
                         {
-                            if (v.at(k) == midifile[i][j].getP1())
-                            {
-                                addMissedNote = false;
-                                break;
-                            }
+                            cout << midifile[i][j].getP1() << endl;
+                            //cout << midiConvArray[c].noteBefore << endl;
+                            cout << midiConvVectorPreset[currentPreset].blub[c].noteBefore << endl;
                         }
-                        if (addMissedNote == true)
+
+                        if (midifile[i][j].getP1() == midiConvVectorPreset[currentPreset].blub[c].noteBefore /*| midiConvArray[c].noteBefore == midiConvArray[c].noteAfter*/)
+                        {
+                            foundMatch = true;
+                            midifile[i][j].setP1(midiConvVectorPreset[currentPreset].blub[c].noteAfter);
+                            if (logConvert == false)
+                                cout << "match" << endl;
+                            break;
+                        }
+                    }
+                    // note not found in matrix -> add notes to matrix
+                    if (foundMatch == false){
+
+                        // write first value to vector
+                        if (v.empty())
                         {
                             v.push_back(midifile[i][j].getP1());
                         }
+                        // check if vector contains value
+                        else
+                        {
+                            bool addMissedNote = true;
+                            for (int k = 0; k < (int)v.size(); k++)
+                            {
+                                if (v.at(k) == midifile[i][j].getP1())
+                                {
+                                    addMissedNote = false;
+                                    break;
+                                }
+                            }
+                            if (addMissedNote == true)
+                            {
+                                v.push_back(midifile[i][j].getP1());
+                            }
+                        }
+                    }
+                }
+                if (logConvert == true)
+                {
+                    if (v.size() > 0)
+                    {
+                        //cout << "Missing notes! :-(" << endl;
+                        //cout << "add those notes to matrix: " << endl;
+                        //std::sort(std::begin(v), std::end(v));
+                        //for (int n : v){
+                            //cout << "{" << n << "," << n << ",Instrument," << midiConvArray[0].pluginBefore << "," << midiConvArray[0].pluginAfter << "},"<< endl;
+                        //}
+                    }
+                    else
+                    {
+                        cout << "Success!" << endl;
                     }
                 }
             }
-            if (logConvert == true)
-            {
-                if (v.size() > 0)
-                {
-                    //cout << "Missing notes! :-(" << endl;
-                    //cout << "add those notes to matrix: " << endl;
-                    //std::sort(std::begin(v), std::end(v));
-                    //for (int n : v){
-                        //cout << "{" << n << "," << n << ",Instrument," << midiConvArray[0].pluginBefore << "," << midiConvArray[0].pluginAfter << "},"<< endl;
-                    //}
-                }
-                else
-                {
-                    cout << "Success!" << endl;
-                }
-            }
+
+            //cout << midifile;
+
+            string newFileName = str.toStdString();
+            newFileName.replace(newFileName.size() - 4,4, extension + ".mid");
+
+            cout << "New file created: " + newFileName << endl;
+
+            midifile.write(newFileName);
         }
-
-        //cout << midifile;
-
-        string newFileName = str.toStdString();
-        newFileName.replace(newFileName.size() - 4,4, extension + ".mid");
-
-        cout << "New file created: " + newFileName << endl;
-
-        midifile.write(newFileName);
+    }
+    catch (...) {
+            std::cout << "Error while converting" << std::endl;
+            QMessageBox msgBox;
+            msgBox.setText("Error while converting");
+            msgBox.exec();
     }
     model->removeRows(0, model->rowCount());
 
@@ -299,6 +279,13 @@ void MainWindow::on_actionLoad_presets_xml_triggered()
             doc.LoadFile(cstr);
 
 
+            bool xmlIsInvalid =  doc.Error();
+
+            if (xmlIsInvalid == true){
+
+                throw XmlFileBroken();
+            }
+
             // parse xml file
             XMLElement* root = doc.FirstChildElement("Presets");
 
@@ -332,11 +319,14 @@ void MainWindow::on_actionLoad_presets_xml_triggered()
 
                 midiConvVector.clear();
             }
-            throw 1;
+
         }
-        catch(...)
+        catch(XmlFileBroken &e)
         {
             std::cout << "Crash while parsing xml file" << std::endl;
+            QMessageBox msgBox;
+            msgBox.setText("xml presets file invalid!");
+            msgBox.exec();
         }
 
 
